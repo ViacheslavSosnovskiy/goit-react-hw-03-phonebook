@@ -35,7 +35,7 @@ class ContactForm extends Component {
           <label className={s.label}>
             Name
             <input
-              maxlength="22"
+              maxLength="22"
               className={s.input}
               type="text"
               name="name"

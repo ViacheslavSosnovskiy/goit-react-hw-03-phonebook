@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import ContactForm from "./ContactForm";
 import Filter from "./Filter";
 import ContactList from "./ContactList";
+import Modal from "./Modal";
 import s from "./App.module.css";
 
 // ========== ID =========== //
@@ -19,7 +20,30 @@ class App extends Component {
       { id: "id-6", name: "Olex Bond", number: "456-87-54" },
     ],
     filter: "",
+    showModal: false,
   };
+
+  componentDidMount() {
+    console.log("componentDidMount");
+
+    const getContacts = localStorage.getItem("contacts");
+    const parsedContacts = JSON.parse(getContacts);
+
+    if (parsedContacts) {
+      this.setState({ contacts: parsedContacts });
+    }
+    // console.log("parsedContacts", parsedContacts);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // console.log("prevProps", prevProps);
+    // console.log("this.state", this.state);
+    if (this.state.contacts !== prevState.contacts) {
+      console.log("обновилось поле!");
+
+      localStorage.setItem("contacts", JSON.stringify(this.state.contacts));
+    }
+  }
 
   addContact = ({ name, number }) => {
     const person = {
@@ -60,6 +84,12 @@ class App extends Component {
     );
   };
 
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
+    }));
+  };
+
   render() {
     const visibleContacts = this.getVisibleContacts();
 
@@ -75,6 +105,18 @@ class App extends Component {
             contacts={visibleContacts}
             onDeleteContact={this.deleteContact}
           />
+        </div>
+        <div>
+          {this.state.showModal && (
+            <Modal onClose={this.toggleModal}>
+              <button type="button" onClick={this.toggleModal}>
+                close modal
+              </button>
+            </Modal>
+          )}
+          <button type="button" onClick={this.toggleModal}>
+            open modal
+          </button>
         </div>
       </div>
     );
