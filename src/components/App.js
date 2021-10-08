@@ -3,11 +3,16 @@ import ContactForm from "./ContactForm";
 import Filter from "./Filter";
 import ContactList from "./ContactList";
 import Modal from "./Modal";
+import IconButton from "./IconButton";
+
 import s from "./App.module.css";
 
 // ========== ID =========== //
 import { v4 as uuidv4 } from "uuid";
 // import shortid from "shortid";
+
+import { ReactComponent as AddContact } from "./icons/user-plus.svg";
+import { ReactComponent as Cross } from "./icons/cross.svg";
 
 class App extends Component {
   state = {
@@ -43,6 +48,14 @@ class App extends Component {
 
       localStorage.setItem("contacts", JSON.stringify(this.state.contacts));
     }
+
+    // закрытие модалки через проверку
+    if (
+      this.state.contacts.length > prevState.contacts.length &&
+      prevState.contacts.length !== 0
+    ) {
+      this.toggleModal();
+    }
   }
 
   addContact = ({ name, number }) => {
@@ -64,6 +77,9 @@ class App extends Component {
     this.setState((prevState) => ({
       contacts: [person, ...prevState.contacts],
     }));
+
+    // закрытие модалки по сабмиту формы
+    // this.toggleModal();
   };
 
   deleteContact = (id) => {
@@ -95,8 +111,10 @@ class App extends Component {
 
     return (
       <div className={s.container}>
+        <IconButton onClick={this.toggleModal} aria-label="добавить контакт">
+          <AddContact width="20" height="20" fill="white" />
+        </IconButton>
         <h1>Phonebook</h1>
-        <ContactForm onSubmit={this.addContact} />
 
         <h2>Contacts</h2>
         <Filter value={this.state.filter} onChange={this.changeFilter} />
@@ -109,14 +127,15 @@ class App extends Component {
         <div>
           {this.state.showModal && (
             <Modal onClose={this.toggleModal}>
-              <button type="button" onClick={this.toggleModal}>
-                close modal
-              </button>
+              <IconButton onClick={this.toggleModal}>
+                <Cross width="20" height="20" fill="white" />
+              </IconButton>
+              <div>
+                <h2>Add contacts</h2>
+                <ContactForm onSubmit={this.addContact} />
+              </div>
             </Modal>
           )}
-          <button type="button" onClick={this.toggleModal}>
-            open modal
-          </button>
         </div>
       </div>
     );
